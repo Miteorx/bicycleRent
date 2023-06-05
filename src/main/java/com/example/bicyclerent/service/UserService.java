@@ -57,6 +57,23 @@ public class UserService implements UserDetailsService {
     }
   }
 
+  public User getUserById(Long id) {
+    Optional<User> user = userRepository.findUserById(id);
+    if (user.isPresent()) {
+      return user.get();
+    }
+    else throw new UsernameNotFoundException("User not found");
+  }
+
+  public User getUserByUsername(String user) throws UsernameNotFoundException {
+    Optional<User> optionalUser = userRepository.findByUser(user);
+    if (optionalUser.isPresent()){
+      return optionalUser.get();
+    }
+    else throw new UsernameNotFoundException("User not found");
+
+  }
+
   public List<UserInfoDto> listUsers() {
     return userRepository.findAll().stream()
         .map(this::toInfoDto)
@@ -67,7 +84,7 @@ public class UserService implements UserDetailsService {
     Optional<User> existingUser = userRepository.findByUser(userDto.getUsername());
     if (existingUser.isEmpty()) {
       return userRepository.save(User.builder()
-          .id(0)
+          .id(0L)
           .user(userDto.getUsername())
           .password(passwordEncoder.encode(userDto.getPassword()))
           .role("USER")

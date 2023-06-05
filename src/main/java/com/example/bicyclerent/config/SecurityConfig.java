@@ -27,6 +27,7 @@ public class SecurityConfig {
         .logout(logout -> logout
             .logoutUrl("/logout")
             .logoutSuccessUrl("/login?logout").permitAll()
+            .and()
         )
         .build();
   }
@@ -41,4 +42,7 @@ public class SecurityConfig {
         )
         .httpBasic(withDefaults())
         .build();
-  }}
+  }
+
+
+}

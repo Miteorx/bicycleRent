@@ -17,7 +17,7 @@
         <nav class="my-2 my-md-0 mr-md-3">
           <a class="p-2 text-dark" href="/">Main page</a>
           <a class="p-2 text-dark" href="/blog">Blog</a>
-          <a class="p-2 text-dark" href="/about">About</a>
+          <a class="p-2 text-dark" th:href="'/profile/' + ${userId}">Profile</a>
 
           <form th:action="@{/logout}" method="post">
             <input type="submit" class="btn btn-outline-primary" value="Logout"/>

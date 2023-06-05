@@ -1,13 +1,12 @@
 package com.example.bicyclerent.model;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,29 +19,24 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class User {
-
+public class UserPrivateInformation {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String user;
+  @Column(name = "real_name")
+  private String realName;
 
-  /**
-   * Contains password hash
-   */
-  private String password;
+  @Column(name = "real_surname")
+  private String realSurname;
 
-  private String role;
+  private String email;
 
-  private boolean enabled;
+  @Column(name = "phone_number")
+  private String phoneNumber;
 
-
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-  private List<Bicycle> bicycles;
-
-  @OneToOne(mappedBy = "user")
-  private UserPrivateInformation userPrivateInformation;
-
+  @OneToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
 }
