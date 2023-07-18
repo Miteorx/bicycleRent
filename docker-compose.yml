@@ -3,6 +3,7 @@ services:
   bicycle-rent:
     container_name: bicycle-rent
     build: .
+    image: bicycle-rent
     restart: always
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/bicycle_rent?useUnicode=true&serverTimezone=UTC&createDatabaseIfNotExist=true
