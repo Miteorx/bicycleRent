@@ -5,7 +5,6 @@ import com.example.bicyclerent.model.User;
 import com.example.bicyclerent.service.UserPrivateInformationService;
 import com.example.bicyclerent.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -34,16 +33,22 @@ public class MainController {
     return "index";
   }
 
-  @PreAuthorize("@profileSecurity.checkUserId(authentication, #request)")
   @GetMapping("/profile/{userId}")
   public String profile(Model model, @AuthenticationPrincipal UserDetails userDetails,
       @PathVariable("userId") String userId) {
-    User user = userService.getUserById(Long.valueOf(userId));
 
-    model.addAttribute("username", userDetails.getUsername());
-    model.addAttribute("userId", user.getId());
-    model.addAttribute("userinfo", userPrivateInformationService.getUserPrivateInformation(user));
-    return "profile";
+    String loggedInUsername = userDetails.getUsername();
+    User loggedInUser = userService.getUserByUsername(loggedInUsername);
+
+    if (loggedInUser.getId().equals(Long.valueOf(userId)) || loggedInUser.getRole().equals("ADMIN")) {
+      User user = userService.getUserById(Long.valueOf(userId));
+      model.addAttribute("username", userDetails.getUsername());
+      model.addAttribute("userId", user.getId());
+      model.addAttribute("userinfo", userPrivateInformationService.getUserPrivateInformation(user));
+      return "profile";
+    } else {
+      return "access-denied";
+    }
   }
 
   @PostMapping("/profile/{userId}")

@@ -1,0 +1,27 @@
+version: '3.9'
+services:
+  bicycle-rent:
+    container_name: bicycle-rent
+    image: sha256:c3854aaffd6cecc7b9e1d1082dceab37e509db661633ef36e7c6897ecaa34553
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test?useUnicode=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME : admin
+      SPRING_DATASOURCE_PASSWORD : admin
+      SPRING_JPA_SHOW-SQL : true
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    container_name: mysql-bicycle-rent
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: test
+    ports:
+      - "3307:3306"
