@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
 <head>
   <title>Getting Started: Serving Web Content</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -20,8 +21,14 @@
           <a class="p-2 text-dark" th:href="'/profile/' + ${userId}">Profile</a>
 
           <form th:action="@{/logout}" method="post">
-            <input type="submit" class="btn btn-outline-primary" value="Logout"/>
+            <input type="submit" class="p-2 text-dark" value="Logout"/>
           </form>
+          <div sec:authorize="hasAuthority('PRIV_USER_MANAGEMENT')">
+
+            <form th:action="@{/bicycle}" method="get">
+          <input type="submit" class="p-2 text-dark" value="Add bicycle"/>
+            </form>
+          </div>
         </nav>
       </th:block>
 
@@ -33,7 +40,7 @@
           <a class="p-2 text-dark" href="/about">About</a>
 
           <form th:action="@{/login}" method="get">
-            <input type="submit" class="btn btn-outline-primary" value="Login"/>
+            <input type="submit" class="p-2 text-dark" value="Login"/>
           </form>
         </nav>
       </th:block>

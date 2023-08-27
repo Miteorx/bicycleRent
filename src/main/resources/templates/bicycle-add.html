@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
 <head>
   <title>Getting Started: Serving Web Content</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -17,9 +18,10 @@
         <nav class="my-2 my-md-0 mr-md-3">
           <a class="p-2 text-dark" href="/">Main page</a>
           <a class="p-2 text-dark" href="/blog">Blog</a>
+          <a class="p-2 text-dark" th:href="'/profile/' + ${userId}">Profile</a>
 
           <form th:action="@{/logout}" method="post">
-            <input type="submit" class="btn btn-outline-primary" value="Logout"/>
+            <input type="submit" class="p-2 text-dark" value="Logout"/>
           </form>
         </nav>
       </th:block>
@@ -32,25 +34,19 @@
           <a class="p-2 text-dark" href="/about">About</a>
 
           <form th:action="@{/login}" method="get">
-            <input type="submit" class="btn btn-outline-primary" value="Login"/>
+            <input type="submit" class="p-2 text-dark" value="Login"/>
           </form>
         </nav>
       </th:block>
-
-    </div>
-    <div class="container mt-5">
-      <h1 th:text="${title}"></h1>
     </div>
   </div>
 </header>
 
-<form th:action="'/profile/' + ${userId}" method="post">
-  <div><label> Name : <input type="text" name="name" th:value="${userinfo.getRealName()}"/></label></div>
-  <div><label> Surname : <input type="text" name="surname" th:value="${userinfo.getRealSurname()}"/> </label></div>
-  <div><label> Email : <input type="email" name="email" th:value="${userinfo.getEmail()}"/> </label></div>
-  <div><label> Phone : <input type="tel" name="phone" th:value="${userinfo.getPhoneNumber()}"/> </label></div>
+<form th:action="'/profile'" method="post">
+  <div><label> Bicycle name : <input type="text" name="name"/></label></div>
+  <div><label> Price : <input type="text" name="price"/> </label></div>
+  <div><label> Photo : <input type="file" name="photo"/> </label></div>
   <input type="submit" class="btn btn-outline-primary" value="Update information"/>
 </form>
-</div>
 </body>
 </html>

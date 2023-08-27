@@ -7,6 +7,7 @@ import com.example.bicyclerent.model.Role;
 import com.example.bicyclerent.model.User;
 import com.example.bicyclerent.repository.RoleRepository;
 import com.example.bicyclerent.repository.UserRepository;
+import com.example.bicyclerent.service.interfaces.UserService;
 import jakarta.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService, UserService {
 
   private final UserRepository userRepository;
 
@@ -57,20 +58,75 @@ public class UserService implements UserDetailsService {
     }
   }
 
-  public User getUserById(Long id) {
+  @Override
+  public User create(UserRegistrationDto userRegistrationDto) {
+    Optional<User> existingUser = userRepository.findByUser(userRegistrationDto.getUsername());
+    if (existingUser.isEmpty()) {
+      return userRepository.save(User.builder()
+          .id(0L)
+          .user(userRegistrationDto.getUsername())
+          .password(passwordEncoder.encode(userRegistrationDto.getPassword()))
+          .role("USER")
+          .enabled(true)
+          .build());
+    } else {
+      /**
+       * Should be updated
+       */
+      throw new UsernameNotFoundException("User already exist");
+    }
+  }
+
+  @Override
+  public User get(Long id) {
     Optional<User> user = userRepository.findUserById(id);
     if (user.isPresent()) {
       return user.get();
+    } else {
+      throw new UsernameNotFoundException("User not found");
     }
-    else throw new UsernameNotFoundException("User not found");
   }
 
-  public User getUserByUsername(String user) throws UsernameNotFoundException {
-    Optional<User> optionalUser = userRepository.findByUser(user);
-    if (optionalUser.isPresent()){
-      return optionalUser.get();
+  @Override
+  public List<User> getAll() {
+    return userRepository.findAll();
+  }
+
+  @Override
+  public User update(UserRegistrationDto userRegistrationDto) {
+    Optional<User> optionalUser = userRepository.findByUser(userRegistrationDto.getUsername());
+    if (optionalUser.isPresent()) {
+      return userRepository.save(User.builder()
+          .id(optionalUser.get().getId())
+          .user(userRegistrationDto.getUsername())
+          .password(passwordEncoder.encode(userRegistrationDto.getPassword()))
+          .role(optionalUser.get().getRole())
+          .enabled(true)
+          .build());
+    } else {
+      throw new UsernameNotFoundException("User not found");
     }
-    else throw new UsernameNotFoundException("User not found");
+  }
+
+  @Override
+  public boolean delete(Long id) {
+    Optional<User> optionalUser = userRepository.findUserById(id);
+    if (optionalUser.isPresent()) {
+      userRepository.delete(optionalUser.get());
+      return true;
+    } else {
+      throw new UsernameNotFoundException("User not found");
+    }
+  }
+
+  @Override
+  public User getUserByUsername(String username) throws UsernameNotFoundException {
+    Optional<User> optionalUser = userRepository.findByUser(username);
+    if (optionalUser.isPresent()) {
+      return optionalUser.get();
+    } else {
+      throw new UsernameNotFoundException("User not found");
+    }
 
   }
 
@@ -78,21 +134,6 @@ public class UserService implements UserDetailsService {
     return userRepository.findAll().stream()
         .map(this::toInfoDto)
         .toList();
-  }
-
-  public User saveUser(UserRegistrationDto userDto) throws Exception {
-    Optional<User> existingUser = userRepository.findByUser(userDto.getUsername());
-    if (existingUser.isEmpty()) {
-      return userRepository.save(User.builder()
-          .id(0L)
-          .user(userDto.getUsername())
-          .password(passwordEncoder.encode(userDto.getPassword()))
-          .role("USER")
-          .enabled(true)
-          .build());
-    } else {
-      throw new Exception();
-    }
   }
 
   private UserInfoDto toInfoDto(User user) {

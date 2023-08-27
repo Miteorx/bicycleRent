@@ -2,8 +2,8 @@ package com.example.bicyclerent.controller;
 
 import com.example.bicyclerent.dto.UserPrivateInformationDto;
 import com.example.bicyclerent.model.User;
-import com.example.bicyclerent.service.UserPrivateInformationService;
-import com.example.bicyclerent.service.UserService;
+import com.example.bicyclerent.service.UserPrivateInformationServiceImpl;
+import com.example.bicyclerent.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class MainController {
 
-  private final UserService userService;
+  private final UserServiceImpl userService;
 
-  private final UserPrivateInformationService userPrivateInformationService;
+  private final UserPrivateInformationServiceImpl userPrivateInformationServiceImpl;
 
   @GetMapping("/")
   public String main(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -41,10 +41,10 @@ public class MainController {
     User loggedInUser = userService.getUserByUsername(loggedInUsername);
 
     if (loggedInUser.getId().equals(Long.valueOf(userId)) || loggedInUser.getRole().equals("ADMIN")) {
-      User user = userService.getUserById(Long.valueOf(userId));
+      User user = userService.get(Long.valueOf(userId));
       model.addAttribute("username", userDetails.getUsername());
       model.addAttribute("userId", user.getId());
-      model.addAttribute("userinfo", userPrivateInformationService.getUserPrivateInformation(user));
+      model.addAttribute("userinfo", userPrivateInformationServiceImpl.get(user.getId()));
       return "profile";
     } else {
       return "access-denied";
@@ -59,13 +59,13 @@ public class MainController {
       @RequestParam String name,
       @RequestParam String surname,
       @RequestParam String email,
-      @RequestParam String phone) throws Exception {
+      @RequestParam String phone) {
 
-    User user = userService.getUserById(Long.valueOf(userId));
+    User user = userService.get(Long.valueOf(userId));
 
     model.addAttribute("username", userDetails.getUsername());
     model.addAttribute("userId", user.getId());
-    model.addAttribute("userinfo", userPrivateInformationService.getUserPrivateInformation(user));
+    model.addAttribute("userinfo", userPrivateInformationServiceImpl.get(user.getId()));
 
     UserPrivateInformationDto userPrivateInformationDto = UserPrivateInformationDto.builder()
         .id(user.getId())
@@ -74,7 +74,7 @@ public class MainController {
         .email(email)
         .phoneNumber(phone).build();
 
-    userPrivateInformationService.updateInfo(user, userPrivateInformationDto);
+    userPrivateInformationServiceImpl.update(user, userPrivateInformationDto);
     return "redirect:/profile/" + userId;
   }
 }
